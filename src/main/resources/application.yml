@@ -1,6 +1,1 @@
-spring:
-  security:
-    user:
-      name: debugger
-      password: ideas
-      roles: {ROLE_VIEWER}
+
