@@ -1,5 +1,6 @@
 package com.jairoprogramador.ssecurity.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import java.util.Map;
 @RequestMapping("/accounts")
 public class AccountsController {
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('VIEW_ACCOUNT','VIEW_CARDS')")
     public Map<String, String> accounts() {
         return Collections.singletonMap("msj", "accounts");
     }
