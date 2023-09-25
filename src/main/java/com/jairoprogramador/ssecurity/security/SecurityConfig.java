@@ -28,10 +28,10 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests
                         ( auth ->
                                 auth
-                                        .requestMatchers("/loans").hasAuthority("VIEW_LOANS")
-                                        .requestMatchers("/balance").hasAuthority("VIEW_BALANCE")
-                                        .requestMatchers("/accounts").hasAnyAuthority("VIEW_ACCOUNT", "VIEW_CARDS")
-                                        .requestMatchers("/cards").hasAuthority("VIEW_CARDS")
+                                        .requestMatchers("/loans").hasRole("LOANS")
+                                        .requestMatchers("/balance").hasRole("BALANCE")
+                                        .requestMatchers("/accounts").hasRole("ACCOUNT")
+                                        .requestMatchers("/cards").hasRole("CARDS")
                                         .anyRequest().permitAll()
                         )
                 .httpBasic(Customizer.withDefaults())

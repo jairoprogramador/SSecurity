@@ -5,8 +5,8 @@ insert into customers (email, pwd) VALUES
   ('balance@jairogalvez.com', 'to_be_encoded');
 
 insert into roles (role_name, description, id_customer) VALUES
-  ('VIEW_ACCOUNT', 'cant view account endpoint', 1),
-  ('VIEW_CARDS', 'cant view cards endpoint', 2),
-  ('VIEW_LOANS', 'cant view loans endpoint', 3),
-  ('VIEW_BALANCE', 'cant view balance endpoint', 4);
+  ('ROLE_ACCOUNT', 'cant view account endpoint', 1),
+  ('ROLE_CARDS', 'cant view cards endpoint', 2),
+  ('ROLE_LOANS', 'cant view loans endpoint', 3),
+  ('ROLE_BALANCE', 'cant view balance endpoint', 4);
 
