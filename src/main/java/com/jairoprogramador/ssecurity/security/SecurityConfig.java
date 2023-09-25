@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -28,9 +28,13 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests
                         ( auth ->
                                 auth
-                                        .requestMatchers("/loans", "/balance", "/accounts","/cards").authenticated()
+                                        .requestMatchers("/loans").hasAuthority("VIEW_LOANS")
+                                        .requestMatchers("/balance").hasAuthority("VIEW_BALANCE")
+                                        .requestMatchers("/accounts").hasAnyAuthority("VIEW_ACCOUNT", "VIEW_CARDS")
+                                        .requestMatchers("/cards").hasAuthority("VIEW_CARDS")
                                         .anyRequest().permitAll()
                         )
+                .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults());
 
         httpSecurity.cors( cors -> corsConfigurationSource());
@@ -45,12 +49,8 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
         var config = new CorsConfiguration();
-        //config.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:8080"));
         config.setAllowedOrigins(List.of("*"));
-
-        //config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         config.setAllowedMethods(List.of("*"));
-
         config.setAllowedHeaders(List.of("*"));
 
         var source = new UrlBasedCorsConfigurationSource();
@@ -61,7 +61,7 @@ public class SecurityConfig {
 
     @Bean
     PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
+        return NoOpPasswordEncoder.getInstance();
     }
 
 }

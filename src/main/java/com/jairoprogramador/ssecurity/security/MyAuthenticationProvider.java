@@ -11,7 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
@@ -28,7 +28,11 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
         final var customer = customerFromDb.orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
         final var customerPwd = customer.getPassword();
         if(passwordEncoder.matches(password, customerPwd)){
-            final var authorities = Collections.singletonList(new SimpleGrantedAuthority(customer.getRole()));
+            final var roles = customer.getRoles();
+
+            final var authorities = roles.stream()
+                    .map(role -> new SimpleGrantedAuthority(role.getName()))
+                    .collect(Collectors.toList());
             return new UsernamePasswordAuthenticationToken(username, password, authorities);
         }else{
             throw  new BadCredentialsException("Invalid credentials");
