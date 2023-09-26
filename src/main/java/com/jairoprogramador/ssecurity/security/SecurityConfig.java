@@ -2,8 +2,11 @@ package com.jairoprogramador.ssecurity.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,8 +24,8 @@ public class SecurityConfig {
 
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.addFilterBefore(new ApiKeyFilter(), BasicAuthenticationFilter.class);
+    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JWTValidationFilter jwtValidationFilter) throws Exception {
+        httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         var requestHandler = new CsrfTokenRequestAttributeHandler();
         requestHandler.setCsrfRequestAttributeName("_csrf");
@@ -38,11 +41,11 @@ public class SecurityConfig {
                         )
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults());
-
+        httpSecurity.addFilterAfter(jwtValidationFilter, BasicAuthenticationFilter.class);
         httpSecurity.cors( cors -> corsConfigurationSource());
         httpSecurity.csrf( csrf -> csrf
                 .csrfTokenRequestHandler(requestHandler)
-                .ignoringRequestMatchers("/welcome", "/about_us")
+                .ignoringRequestMatchers("/welcome", "/about_us", "/authenticate")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
         ).addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
         return httpSecurity.build();
@@ -66,4 +69,8 @@ public class SecurityConfig {
         return NoOpPasswordEncoder.getInstance();
     }
 
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
 }
